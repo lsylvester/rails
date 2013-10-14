@@ -1,3 +1,8 @@
+*   Support for Postgres `citext` data type enabling case-insensitive where
+    values without needing to wrap in UPPER/LOWER sql functions.
+
+    *Troy Kruthoff*, *Lachlan Sylvester*
+
 *   `Relation` no longer has mutator methods like `#map!` and `#delete_if`. Convert
     to an `Array` by calling `#to_a` before using these methods.
 

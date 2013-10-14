@@ -385,6 +385,10 @@ module ActiveRecord
           column name, type, options
         end
 
+        def citext(name, options = {})
+          column(name, 'citext', options)
+        end
+
         def column(name, type = nil, options = {})
           super
           column = self[name]
@@ -433,7 +437,8 @@ module ActiveRecord
         macaddr:     { name: "macaddr" },
         uuid:        { name: "uuid" },
         json:        { name: "json" },
-        ltree:       { name: "ltree" }
+        ltree:       { name: "ltree" },
+        citext:      { name: "citext" }
       }
 
       include Quoting
