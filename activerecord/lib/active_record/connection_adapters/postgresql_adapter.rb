@@ -207,6 +207,8 @@ module ActiveRecord
           # Character types
           when /^(?:character varying|bpchar)(?:\(\d+\))?$/
             :string
+          when /^citext(?:\(\d+\))?$/
+            :citext
           # Binary data types
           when 'bytea'
             :binary
