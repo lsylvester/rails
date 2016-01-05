@@ -12,7 +12,7 @@ module ActiveRecord
         @verbose_was = ActiveRecord::Migration.verbose
         ActiveRecord::Migration.verbose = false
 
-        connection.create_table :testings do |t|
+        connection.create_table :testings, force: true do |t|
           t.column :foo, :string, :limit => 100
           t.column :bar, :string, :limit => 100
         end
@@ -36,6 +36,21 @@ module ActiveRecord
         assert connection.index_exists?(:testings, :foo, name: "custom_index_name")
         assert_raise(StandardError) { ActiveRecord::Migrator.new(:up, [migration]).migrate }
         assert connection.index_exists?(:testings, :foo, name: "custom_index_name")
+      end
+
+      def test_migration_does_remove_unnamed_index
+        connection.add_index :testings, :bar
+
+        migration = Class.new(ActiveRecord::Migration[4.2]) {
+          def version; 101 end
+          def migrate(x)
+            remove_index :testings, :bar
+          end
+        }.new
+
+        assert connection.index_exists?(:testings, :bar)
+        ActiveRecord::Migrator.new(:up, [migration]).migrate
+        assert_not connection.index_exists?(:testings, :bar)
       end
     end
   end
