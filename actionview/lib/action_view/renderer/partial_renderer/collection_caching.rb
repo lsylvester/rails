@@ -17,6 +17,11 @@ module ActionView
         instrumentation_payload[:cache_hits] = cached_partials.size
 
         @collection = keyed_collection.reject { |key, _| cached_partials.key?(key) }.values
+
+        if @options[:prepare_misses]
+          @options[:prepare_misses].call(@collection)
+        end
+
         rendered_partials = @collection.empty? ? [] : yield
 
         index = 0

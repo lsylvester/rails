@@ -677,6 +677,20 @@ class CachedCollectionViewRenderTest < ActiveSupport::TestCase
       @view.render(partial: "test/customer", collection: [customer], cached: true)
   end
 
+  test "collection caching with a prepare_misses callback" do
+    hit_customer = Customer.new("david", 1)
+    key = cache_key(hit_customer, "test/_customer")
+
+    ActionView::PartialRenderer.collection_cache.write(key, 'Cached')
+
+    miss_customer = Customer.new("Eileen", 2)
+    misses = nil
+
+    @view.render(partial: "test/customer", collection: [hit_customer, miss_customer], cached: true, prepare_misses: -> customers { misses = customers })
+
+    assert_equal [miss_customer], misses
+  end
+
   test "collection caching with cached true" do
     customer = CachedCustomer.new("david", 1)
     key = cache_key(customer, "test/_cached_customer")
