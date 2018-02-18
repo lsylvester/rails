@@ -406,12 +406,22 @@ module ActionView
       def collection_from_options
         if @options.key?(:collection)
           collection = @options[:collection]
-          collection ? collection.to_a : []
+          if collection.respond_to?(:cache_keys)
+            @cache_keys = collection.cache_keys
+            @collection = collection
+          else
+            collection ? collection.to_a : []
+          end
         end
       end
 
       def collection_from_object
-        @object.to_ary if @object.respond_to?(:to_ary)
+        if @object.respond_to?(:cache_keys)
+          @cache_keys = @object.cache_keys
+          @collection = @object
+        elsif @object.respond_to?(:to_ary)
+          @object.to_ary
+        end
       end
 
       def find_partial

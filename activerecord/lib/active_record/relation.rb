@@ -17,9 +17,10 @@ module ActiveRecord
     include Enumerable
     include FinderMethods, Calculations, SpawnMethods, QueryMethods, Batches, Explain, Delegation
 
-    attr_reader :table, :klass, :loaded, :predicate_builder
+    attr_reader :table, :klass, :loaded, :predicate_builder, :records_loaded
     alias :model :klass
     alias :loaded? :loaded
+    alias :records_loaded? :records_loaded
     alias :locked? :lock_value
 
     def initialize(klass, table: klass.arel_table, predicate_builder: klass.predicate_builder, values: {})
@@ -228,6 +229,16 @@ module ActiveRecord
     def records # :nodoc:
       load
       @records
+    end
+
+    def cache_keys &block
+      exec_record_queries(&block) unless records_loaded?
+      @records
+    end
+
+    def members_for_cache_keys(records)
+      exec_preloading_queries(records)
+      records
     end
 
     # Serializes the relation objects Array.
@@ -445,7 +456,7 @@ module ActiveRecord
     end
 
     def reset
-      @to_sql = @arel = @loaded = @should_eager_load = nil
+      @to_sql = @arel = @loaded = @should_eager_load = @records_loaded = nil
       @records = [].freeze
       @offsets = {}
       self
@@ -550,6 +561,7 @@ module ActiveRecord
 
       def load_records(records)
         @records = records.freeze
+        @records_loaded = true
         @loaded = true
       end
 
@@ -560,6 +572,17 @@ module ActiveRecord
       end
 
       def exec_queries(&block)
+
+        exec_record_queries(&block) unless records_loaded?
+        exec_preloading_queries(@records)
+
+        @records.each(&:readonly!) if readonly_value
+
+        @loaded = true
+        @records
+      end
+
+      def exec_record_queries(&block)
         skip_query_cache_if_necessary do
           @records =
             if eager_loading?
@@ -574,19 +597,19 @@ module ActiveRecord
             else
               klass.find_by_sql(arel, &block).freeze
             end
+          @records_loaded = true
+        end
+      end
 
+      def exec_preloading_queries(records)
+        skip_query_cache_if_necessary do
           preload = preload_values
           preload += includes_values unless eager_loading?
           preloader = nil
           preload.each do |associations|
             preloader ||= build_preloader
-            preloader.preload @records, associations
+            preloader.preload records, associations
           end
-
-          @records.each(&:readonly!) if readonly_value
-
-          @loaded = true
-          @records
         end
       end
 

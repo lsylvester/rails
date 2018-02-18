@@ -18,7 +18,12 @@ module ActionView
         cached_partials  = collection_cache.read_multi(*keyed_collection.keys)
         instrumentation_payload[:cache_hits] = cached_partials.size
 
-        @collection = keyed_collection.reject { |key, _| cached_partials.key?(key) }.values
+        missed_cache_keys = keyed_collection.reject { |key, _| cached_partials.key?(key) }.values
+        @collection = if @cache_keys
+                        @collection.members_for_cache_keys(missed_cache_keys)
+                      else
+                        missed_cache_keys
+                      end
         rendered_partials = @collection.empty? ? [] : yield
 
         index = 0
@@ -34,7 +39,7 @@ module ActionView
       def collection_by_cache_keys
         seed = callable_cache_key? ? @options[:cached] : ->(i) { i }
 
-        @collection.each_with_object({}) do |item, hash|
+        (@cache_keys || @collection).each_with_object({}) do |item, hash|
           hash[expanded_cache_key(seed.call(item))] = item
         end
       end
