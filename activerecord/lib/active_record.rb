@@ -37,6 +37,7 @@ module ActiveRecord
 
   autoload :Base
   autoload :Callbacks
+  autoload :CacheKeys
   autoload :Core
   autoload :ConnectionHandling
   autoload :CounterCache

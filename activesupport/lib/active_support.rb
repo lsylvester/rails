@@ -44,6 +44,7 @@ module ActiveSupport
   autoload :LogSubscriber
   autoload :Notifications
   autoload :Reloader
+  autoload :CacheKeys
 
   eager_autoload do
     autoload :BacktraceCleaner

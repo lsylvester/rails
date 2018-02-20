@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require 'active_support/cache_keys'
+
 module ActionView
   module CollectionCaching # :nodoc:
     extend ActiveSupport::Concern
@@ -13,30 +15,37 @@ module ActionView
     private
       def cache_collection_render(instrumentation_payload)
         return yield unless @options[:cached]
+        cache_keys = expanded_cache_keys
 
-        keyed_collection = collection_by_cache_keys
-        cached_partials  = collection_cache.read_multi(*keyed_collection.keys)
+        cached_partials  = collection_cache.read_multi(*cache_keys.expanded)
         instrumentation_payload[:cache_hits] = cached_partials.size
 
-        @collection = keyed_collection.reject { |key, _| cached_partials.key?(key) }.values
+        @collection = cache_keys.missed_members_for_hits(cached_partials)
         rendered_partials = @collection.empty? ? [] : yield
 
         index = 0
-        fetch_or_cache_partial(cached_partials, order_by: keyed_collection.each_key) do
+        fetch_or_cache_partial(cached_partials, order_by: cache_keys.each) do
           rendered_partials[index].tap { index += 1 }
         end
       end
 
-      def callable_cache_key?
-        @options[:cached].respond_to?(:call)
-      end
+      def expanded_cache_keys
+        cache_keys = if @collection.is_a?(ActiveSupport::CacheKeys)
+          @collection
+        else
+          ActiveSupport::CacheKeys.new(@collection)
+        end
 
-      def collection_by_cache_keys
         seed = callable_cache_key? ? @options[:cached] : ->(i) { i }
 
-        @collection.each_with_object({}) do |item, hash|
-          hash[expanded_cache_key(seed.call(item))] = item
+        cache_keys.expand do |item|
+          expanded_cache_key(seed.call(item))
         end
+        cache_keys
+      end
+
+      def callable_cache_key?
+        @options[:cached].respond_to?(:call)
       end
 
       def expanded_cache_key(key)
