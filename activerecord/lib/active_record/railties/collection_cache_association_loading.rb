@@ -3,30 +3,17 @@
 module ActiveRecord
   module Railties # :nodoc:
     module CollectionCacheAssociationLoading #:nodoc:
-      def setup(context, options, block)
-        @relation = relation_from_options(options)
+      def defer_preloading(collection)
+        collection.defer_preloading! if collection.is_a?(ActiveRecord::Relation) && !collection.loaded?
+      end
 
+      def collection_from_options
+        defer_preloading(@options[:collection]) if @options[:cached]
         super
       end
 
-      def relation_from_options(cached: nil, partial: nil, collection: nil, **_)
-        return unless cached
-
-        relation = partial if partial.is_a?(ActiveRecord::Relation)
-        relation ||= collection if collection.is_a?(ActiveRecord::Relation)
-
-        if relation && !relation.loaded?
-          relation.skip_preloading!
-        end
-      end
-
-      def collection_without_template
-        @relation.preload_associations(@collection) if @relation
-        super
-      end
-
-      def collection_with_template
-        @relation.preload_associations(@collection) if @relation
+      def collection_from_object
+        defer_preloading(@object) if @options[:cached]
         super
       end
     end

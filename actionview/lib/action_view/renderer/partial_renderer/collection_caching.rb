@@ -18,7 +18,12 @@ module ActionView
         cached_partials  = collection_cache.read_multi(*keyed_collection.keys)
         instrumentation_payload[:cache_hits] = cached_partials.size
 
-        @collection = keyed_collection.reject { |key, _| cached_partials.key?(key) }.values
+        @collection = keyed_collection.reject do |key, value|
+          if cached_partials.key?(key)
+            value.mark_as_cache_hit if value.respond_to?(:mark_as_cache_hit)
+            true
+          end
+        end.values
         rendered_partials = @collection.empty? ? [] : yield
 
         index = 0

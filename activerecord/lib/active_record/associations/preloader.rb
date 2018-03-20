@@ -48,6 +48,47 @@ module ActiveRecord
         autoload :ThroughAssociation, "active_record/associations/preloader/through_association"
       end
 
+      def initialize(records = nil, associations = nil)
+        @records = records
+        @records.uniq!
+        @associations = associations
+
+        @loadable_assocations = associations.each_with_object({}) do |association, hash|
+          if association.is_a?(Hash)
+            association.each do |key, value|
+              key = key.to_sym
+              hash[key] ||= []
+              hash[key] << {key => value}
+            end
+          elsif association.is_a?(String) || association.is_a?(Symbol)
+            association = association.to_sym
+            hash[association] ||= []
+            hash[association] << association
+          end
+        end
+      rescue
+        puts associations.inspect
+        raise
+      end
+
+      def load_association(association)
+        associations = @loadable_assocations.delete(association.reflection.name)
+        if associations
+          preload(@records, @associations)
+          true
+        else
+          false
+        end
+      end
+
+      def load
+        preload(@records, @associations)
+      end
+
+      def pending?
+        @records
+      end
+
       # Eager loads the named associations for the given Active Record record(s).
       #
       # In this description, 'association name' shall refer to the name passed
@@ -93,6 +134,10 @@ module ActiveRecord
             preloaders_on association, records, preload_scope
           }
         end
+      end
+
+      def exclude(record)
+        @records.delete(record)
       end
 
       private

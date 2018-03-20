@@ -74,7 +74,8 @@ module ActiveRecord
   autoload :Translation
   autoload :Validations
   autoload :SecureToken
-
+  autoload :DeferedPreloading
+  
   eager_autoload do
     autoload :ActiveRecordError, "active_record/errors"
     autoload :ConnectionNotEstablished, "active_record/errors"

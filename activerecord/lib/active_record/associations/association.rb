@@ -50,7 +50,11 @@ module ActiveRecord
 
       # Has the \target been already \loaded?
       def loaded?
-        @loaded
+        if @loaded
+          true
+        elsif owner.defered_preloader
+          owner.defered_preloader.load_association(self)
+        end
       end
 
       # Asserts the \target has been loaded setting the \loaded flag to +true+.

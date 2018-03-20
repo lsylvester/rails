@@ -899,8 +899,17 @@ module ActiveRecord
       self
     end
 
-    def skip_preloading! # :nodoc:
-      self.skip_preloading_value = true
+    # Delays preloading associations until the any of the associations are accessed.
+    #
+    # Individual records can be exluded from the preloading by calling
+    # `exclude_from_preloading` on records before the associations are accessed
+
+    def defer_preloading
+      spawn.defer_preloading!
+    end
+
+    def defer_preloading! # :nodoc:
+      self.defer_preloading_value = true
       self
     end
 
