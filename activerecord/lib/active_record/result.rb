@@ -105,6 +105,19 @@ module ActiveRecord
       columns.one? ? result.map!(&:first) : result
     end
 
+    def cast_values!(type_overrides = {}) # :nodoc:
+      types = columns.map { |name| column_type(name, type_overrides) }
+      length = columns.length
+      rows.each do |values|
+        index = 0
+        while index < length
+          values[index] = types[index].deserialize(values[index])
+          index += 1
+        end
+      end
+      columns.one? ? rows.map!(&:first) : rows
+    end
+
     def initialize_copy(other)
       @columns      = columns.dup
       @rows         = rows.dup
