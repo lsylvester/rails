@@ -172,12 +172,6 @@ class ActionCable::Channel::BaseTest < ActionCable::TestCase
     assert_equal available_actions, ChatChannel.action_methods
   end
 
-  test "invalid action on Channel" do
-    assert_logged("Unable to process ActionCable::Channel::BaseTest::ChatChannel#invalid_action") do
-      @channel.perform_action "action" => :invalid_action
-    end
-  end
-
   test "notification for perform_action" do
     begin
       events = []
@@ -255,20 +249,4 @@ class ActionCable::Channel::BaseTest < ActionCable::TestCase
       ActiveSupport::Notifications.unsubscribe "transmit_subscription_rejection.action_cable"
     end
   end
-
-  private
-    def assert_logged(message)
-      old_logger = @connection.logger
-      log = StringIO.new
-      @connection.instance_variable_set(:@logger, Logger.new(log))
-
-      begin
-        yield
-
-        log.rewind
-        assert_match message, log.read
-      ensure
-        @connection.instance_variable_set(:@logger, old_logger)
-      end
-    end
 end

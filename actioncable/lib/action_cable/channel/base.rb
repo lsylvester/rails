@@ -162,13 +162,14 @@ module ActionCable
       def perform_action(data)
         action = extract_action(data)
 
-        if processable_action?(action)
-          payload = { channel_class: self.class.name, action: action, data: data }
-          ActiveSupport::Notifications.instrument("perform_action.action_cable", payload) do
+        payload = { channel_class: self.class.name, action: action, data: data }
+
+        ActiveSupport::Notifications.instrument("perform_action.action_cable", payload) do
+          if processable_action?(action)
             dispatch_action(action, data)
+          else
+            payload[:invalid_action] = true
           end
-        else
-          logger.error "Unable to process #{action_signature(action, data)}"
         end
       end
 
@@ -207,10 +208,6 @@ module ActionCable
         # Transmit a hash of data to the subscriber. The hash will automatically be wrapped in a JSON envelope with
         # the proper channel identifier marked as the recipient.
         def transmit(data, via: nil) # :doc:
-          status = "#{self.class.name} transmitting #{data.inspect.truncate(300)}"
-          status += " (via #{via})" if via
-          logger.debug(status)
-
           payload = { channel_class: self.class.name, data: data, via: via }
           ActiveSupport::Notifications.instrument("transmit.action_cable", payload) do
             connection.transmit identifier: @identifier, message: data
@@ -260,8 +257,6 @@ module ActionCable
         end
 
         def dispatch_action(action, data)
-          logger.info action_signature(action, data)
-
           if method(action).arity == 1
             public_send action, data
           else
@@ -269,18 +264,8 @@ module ActionCable
           end
         end
 
-        def action_signature(action, data)
-          "#{self.class.name}##{action}".dup.tap do |signature|
-            if (arguments = data.except("action")).any?
-              signature << "(#{arguments.inspect})"
-            end
-          end
-        end
-
         def transmit_subscription_confirmation
           unless subscription_confirmation_sent?
-            logger.info "#{self.class.name} is transmitting the subscription confirmation"
-
             ActiveSupport::Notifications.instrument("transmit_subscription_confirmation.action_cable", channel_class: self.class.name) do
               connection.transmit identifier: @identifier, type: ActionCable::INTERNAL[:message_types][:confirmation]
               @subscription_confirmation_sent = true
@@ -294,8 +279,6 @@ module ActionCable
         end
 
         def transmit_subscription_rejection
-          logger.info "#{self.class.name} is transmitting the subscription rejection"
-
           ActiveSupport::Notifications.instrument("transmit_subscription_rejection.action_cable", channel_class: self.class.name) do
             connection.transmit identifier: @identifier, type: ActionCable::INTERNAL[:message_types][:rejection]
           end

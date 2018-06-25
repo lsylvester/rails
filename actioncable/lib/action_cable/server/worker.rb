@@ -10,7 +10,6 @@ module ActionCable
     class Worker # :nodoc:
       include ActiveSupport::Callbacks
 
-      thread_mattr_accessor :connection
       define_callbacks :work
       include ActiveRecordConnectionManagement
 
@@ -24,6 +23,10 @@ module ActionCable
         )
       end
 
+      def connection
+        Current.connection
+      end
+
       # Stop processing work: any work that has not already started
       # running will be discarded from the queue
       def halt
@@ -35,13 +38,13 @@ module ActionCable
       end
 
       def work(connection)
-        self.connection = connection
+        Current.connection = connection
 
         run_callbacks :work do
           yield
         end
       ensure
-        self.connection = nil
+        Current.reset
       end
 
       def async_exec(receiver, *args, connection:, &block)

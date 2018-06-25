@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require "monitor"
+require "action_cable/log_subscriber"
 
 module ActionCable
   module Server
