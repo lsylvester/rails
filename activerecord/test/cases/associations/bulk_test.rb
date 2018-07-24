@@ -39,4 +39,17 @@ class BulkAssociationsTest < ActiveRecord::TestCase
     end
 
   end
+
+  test "singular assoication bulk loading" do
+    posts = Post.bulk_load(:author)
+
+    assert_queries(1) do
+      posts.load
+    end
+
+    assert_queries(1) do
+      posts.first.author
+      posts.second.author
+    end
+  end
 end
