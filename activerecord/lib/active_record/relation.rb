@@ -5,7 +5,7 @@ module ActiveRecord
   class Relation
     MULTI_VALUE_METHODS  = [:includes, :eager_load, :preload, :select, :group,
                             :order, :joins, :left_outer_joins, :references,
-                            :extending, :unscope]
+                            :extending, :unscope, :bulk_load]
 
     SINGLE_VALUE_METHODS = [:limit, :offset, :lock, :readonly, :reordering,
                             :reverse_order, :distinct, :create_with, :skip_query_cache]
@@ -631,6 +631,13 @@ module ActiveRecord
             end
 
           preload_associations(@records) unless skip_preloading_value
+
+          if bulk_load_values.any?
+            bulk_loader = ActiveRecord::Associations::BulkLoader.new(@records, bulk_load_values)
+            @records.each do |record|
+              record.bulk_loader = bulk_loader
+            end
+          end
 
           @records.each(&:readonly!) if readonly_value
 

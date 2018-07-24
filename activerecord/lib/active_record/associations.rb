@@ -219,6 +219,7 @@ module ActiveRecord
       autoload :JoinDependency
       autoload :AssociationScope
       autoload :AliasTracker
+      autoload :BulkLoader
     end
 
     def self.eager_load!

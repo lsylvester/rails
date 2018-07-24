@@ -154,6 +154,16 @@ module ActiveRecord
       self
     end
 
+    def bulk_load(*args)
+      check_if_method_has_arguments!(:preload, args)
+      spawn.bulk_load!(*args)
+    end
+
+    def bulk_load!(*args)
+      self.bulk_load_values += args
+      self
+    end
+
     # Use to indicate that the given +table_names+ are referenced by an SQL string,
     # and should therefore be JOINed in any query rather than loaded separately.
     # This method only works in conjunction with #includes.
