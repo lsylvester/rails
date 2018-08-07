@@ -53,7 +53,7 @@ module ActiveRecord
       end
 
       def initialize(records, preloader, associations)
-        @records = records
+        @records = records.map{ |r| ::WeakRef.new(r) }
         @preloader = preloader
         @associations = associations
       end
@@ -67,14 +67,21 @@ module ActiveRecord
       def preload(association)
         return unless should_load? association
         associations_to_load.delete association
-        @preloader.preload @records, association
+        @preloader.preload records, association
         @preloader.lazy_preload loaded_records(association), associations_to_load_next(association)
+      end
+
+      def records
+        @records.map do |ref|
+          ref.__getobj__ if ref.weakref_alive?
+        rescue WeakRef::RefError
+        end.compact
       end
 
       private
 
         def loaded_records(association)
-          @records.flat_map { |record| record.association(association).target }
+          records.flat_map { |record| record.association(association).target }
         end
 
         def associations_to_load
