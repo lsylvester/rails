@@ -52,8 +52,16 @@ module ActiveRecord
         end
       end
 
+      def finalizer
+        -> object_id { @records.delete(object_id) }
+      end
+
       def initialize(records, preloader, associations)
-        @records = records.map{ |r| ::WeakRef.new(r) }
+        @finalizer = finalizer
+        @records = records.index_by(&:object_id).transform_values do |v|
+          ObjectSpace.define_finalizer(v, finalizer)
+          ::WeakRef.new(v)
+        end
         @preloader = preloader
         @associations = associations
       end
@@ -72,10 +80,7 @@ module ActiveRecord
       end
 
       def records
-        @records.map do |ref|
-          ref.__getobj__ if ref.weakref_alive?
-        rescue WeakRef::RefError
-        end.compact
+        @records.values.map(&:__getobj__)
       end
 
       private

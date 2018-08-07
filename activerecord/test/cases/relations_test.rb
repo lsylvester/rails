@@ -2027,6 +2027,14 @@ class RelationTest < ActiveRecord::TestCase
     assert_empty authors
   end
 
+  test "should not preload garbage collected records" do
+    categories = Category.preload(:categorizations).find_in_batches(batch_size: 5).flat_map{ |batch| batch.first(2) }
+    GC.start
+    assert_sql /\(\?, *\?\)/ do
+      categories.first.categorizations.load
+    end
+  end
+
   private
     def custom_post_relation(alias_name = "omg_posts")
       table_alias = Post.arel_table.alias(alias_name)
