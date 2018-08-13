@@ -5,7 +5,7 @@ require "active_support/backtrace_cleaner"
 module Rails
   class BacktraceCleaner < ActiveSupport::BacktraceCleaner
     APP_DIRS_PATTERN = /^\/?(app|config|lib|test|\(\w*\))/
-    RENDER_TEMPLATE_PATTERN = /:in `.*_\w+_{2,3}\d+_\d+'/
+    RENDER_TEMPLATE_PATTERN = /.*_\w+_{2,3}\d+_\d+/
     EMPTY_STRING = "".freeze
     SLASH        = "/".freeze
     DOT_SLASH    = "./".freeze
@@ -13,12 +13,12 @@ module Rails
     def initialize
       super
       @root = "#{Rails.root}/".freeze
-      add_filter { |line| line.sub(@root, EMPTY_STRING) }
-      add_filter { |line| line.sub(RENDER_TEMPLATE_PATTERN, EMPTY_STRING) }
-      add_filter { |line| line.sub(DOT_SLASH, SLASH) } # for tests
+      add_filter(:path) { |path| path.sub(@root, EMPTY_STRING) }
+      add_filter(:path) { |path| path.sub(DOT_SLASH, SLASH) } # for tests
+      add_filter(:label) { |label| RENDER_TEMPLATE_PATTERN.match?(label) ? nil : label }
 
       add_gem_filters
-      add_silencer { |line| !APP_DIRS_PATTERN.match?(line) }
+      add_silencer(:path) { |path| !APP_DIRS_PATTERN.match?(path) }
     end
 
     private
@@ -28,7 +28,7 @@ module Rails
 
         gems_regexp = %r{(#{gems_paths.join('|')})/gems/([^/]+)-([\w.]+)/(.*)}
         gems_result = '\2 (\3) \4'.freeze
-        add_filter { |line| line.sub(gems_regexp, gems_result) }
+        add_filter(:path) { |path| path.sub(gems_regexp, gems_result) }
       end
   end
 end

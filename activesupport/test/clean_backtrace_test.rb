@@ -74,3 +74,45 @@ class BacktraceCleanerFilterAndSilencerTest < ActiveSupport::TestCase
     assert_equal [ "/class.rb" ], @bc.clean([ "/mongrel/class.rb" ])
   end
 end
+
+class BacktraceCleanerSilencePathsTest < ActiveSupport::TestCase
+  def setup
+    @bc = ActiveSupport::BacktraceCleaner.new
+    @bc.add_silencer(:path) { |path| !/clean_backtrace_test/.match?(path) }
+  end
+
+  test "backtrace should silence locations based on path" do
+    result = @bc.clean_locations(generate_caller_locations)
+    assert_equal 1, result.length
+    assert_equal "block in <class:BacktraceCleanerSilencePathsTest>", result.first.label
+  end
+
+  test "noise should exlude the silenced path" do
+    result = @bc.clean_locations(generate_caller_locations, :noise)
+    assert_not_equal "block in <class:BacktraceCleanerSilencePathsTest>", result.first.label
+  end
+
+  private
+
+    def generate_caller_locations
+      caller_locations
+    end
+end
+
+class BacktraceCleanerFilterPathsTest < ActiveSupport::TestCase
+  def setup
+    @bc = ActiveSupport::BacktraceCleaner.new
+    @bc.add_filter(:path) { |path| path.gsub("#{__dir__}/", "") }
+  end
+
+  test "backtrace should filter locations based on path" do
+    result = @bc.clean_locations(generate_caller_locations)
+    assert_equal "clean_backtrace_test.rb", result.first.path
+  end
+
+  private
+
+    def generate_caller_locations
+      caller_locations
+    end
+end
