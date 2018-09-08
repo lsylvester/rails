@@ -44,7 +44,7 @@ module ActiveRecord
 
     test "cache_key_with_version always has both key and version" do
       r1 = CacheMeWithVersion.create
-      assert_equal "active_record/cache_key_test/cache_me_with_versions/#{r1.id}-#{r1.updated_at.to_s(:usec)}", r1.cache_key_with_version
+      assert_equal "active_record/cache_key_test/cache_me_with_versions/#{r1.id}-#{r1.updated_at}", r1.cache_key_with_version
 
       r2 = CacheMe.create
       assert_equal "active_record/cache_key_test/cache_mes/#{r2.id}-#{r2.updated_at.to_s(:usec)}", r2.cache_key_with_version

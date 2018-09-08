@@ -96,7 +96,11 @@ module ActiveRecord
     # Note, this method will return nil if ActiveRecord::Base.cache_versioning is set to
     # +false+ (which it is by default until Rails 6.0).
     def cache_version
-      if cache_versioning && timestamp = try(:updated_at)
+      return unless cache_versioning
+
+      if timestamp = try(:updated_at_before_type_cast)
+        timestamp
+      elsif timestamp = try(:updated_at)
         timestamp.utc.to_s(:usec)
       end
     end
