@@ -156,17 +156,41 @@ class IntegrationTest < ActiveRecord::TestCase
   def test_cache_key_format_is_precise_enough
     skip("Subsecond precision is not supported") unless subsecond_precision_supported?
     dev = Developer.first
+    dev.touch
     key = dev.cache_key
     dev.touch
     assert_not_equal key, dev.cache_key
   end
 
   def test_cache_key_format_is_not_too_precise
-    skip("Subsecond precision is not supported") unless subsecond_precision_supported?
     dev = Developer.first
     dev.touch
     key = dev.cache_key
     assert_equal key, dev.reload.cache_key
+  end
+
+  def test_cache_version_format_is_precise_enough
+    skip("Subsecond precision is not supported") unless subsecond_precision_supported?
+    Developer.cache_versioning = true
+
+    dev = Developer.first
+    dev.touch
+    version = dev.cache_version.to_param
+    dev.touch
+    assert_not_equal version, dev.cache_version.to_param
+  ensure
+    Developer.cache_versioning = false
+  end
+
+  def test_cache_version_format_is_not_too_precise
+    Developer.cache_versioning = true
+
+    dev = Developer.first
+    dev.touch
+    key = dev.cache_version.to_param
+    assert_equal key, dev.reload.cache_version.to_param
+  ensure
+    Developer.cache_versioning = false
   end
 
   def test_named_timestamps_for_cache_key
