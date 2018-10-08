@@ -6,6 +6,7 @@ require "active_support/values/time_zone"
 class Time
   DATE_FORMATS = {
     db: "%Y-%m-%d %H:%M:%S",
+    param: "%Y-%m-%d %H:%M:%S.%6N",
     number: "%Y%m%d%H%M%S",
     nsec: "%Y%m%d%H%M%S%9N",
     usec: "%Y%m%d%H%M%S%6N",
@@ -69,4 +70,8 @@ class Time
 
   # Aliased to +xmlschema+ for compatibility with +DateTime+
   alias_method :rfc3339, :xmlschema
+
+  def to_param
+    to_s(:param)
+  end
 end
