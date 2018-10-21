@@ -95,28 +95,25 @@ module ActiveRecord
 
     test "cache_version does call updated_at when it is assigned via a Time object" do
       record = CacheMeWithVersion.create
-      record_from_db = CacheMeWithVersion.find(record.id)
-      assert_called(record_from_db, :updated_at) do
-        record_from_db.updated_at = Time.now
-        record_from_db.cache_version
+      assert_called(record, :updated_at) do
+        record.updated_at = Time.now
+        record.cache_version
       end
     end
 
     test "cache_version does call updated_at when it is assigned via a string" do
-      record = CacheMeWithVersion.create
-      record_from_db = CacheMeWithVersion.find(record.id)
-      assert_called(record_from_db, :updated_at) do
-        record_from_db.updated_at = Time.now.to_s
-        record_from_db.cache_version
+      record = CacheMeWithVersion.new
+      assert_called(record, :updated_at) do
+        record.updated_at = Time.now.to_s
+        record.cache_version
       end
     end
 
     test "cache_version does call updated_at when it is assigned via a hash" do
-      record = CacheMeWithVersion.create
-      record_from_db = CacheMeWithVersion.find(record.id)
-      assert_called(record_from_db, :updated_at) do
-        record_from_db.updated_at = { 1 => 2016, 2 => 11, 3 => 12, 4 => 1, 5 => 2, 6 => 3, 7 => 22 }
-        record_from_db.cache_version
+      record = CacheMeWithVersion.new
+      assert_called(record, :updated_at) do
+        record.updated_at = { 1 => 2016, 2 => 11, 3 => 12, 4 => 1, 5 => 2, 6 => 3, 7 => 22 }
+        record.cache_version
       end
     end
 
