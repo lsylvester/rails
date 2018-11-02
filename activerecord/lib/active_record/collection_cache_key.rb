@@ -26,7 +26,7 @@ module ActiveRecord
           subquery = query.arel.as(subquery_alias)
           arel = Arel::SelectManager.new(subquery).project(select_values % subquery_column)
         else
-          query = collection.unscope(:order)
+          query = collection.unscope(:order, :group, :having)
           query.select_values = [select_values % column]
           arel = query.arel
         end

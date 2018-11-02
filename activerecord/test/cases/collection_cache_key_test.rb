@@ -171,5 +171,27 @@ module ActiveRecord
 
       assert_match(/\Adevelopers\/query-(\h+)-(\d+)-(\d+)\z/, developers.cache_key)
     end
+
+    test "cache_key with a relation having a group clause" do
+      developers = Developer.group(:salary)
+
+      assert_match(/\Adevelopers\/query-(\h+)-(\d+)-(\d+)\z/, developers.cache_key)
+
+      /\Adevelopers\/query-(\h+)-(\d+)-(\d+)\z/ =~ developers.cache_key
+
+      assert_equal ActiveSupport::Digest.hexdigest(developers.to_sql), $1
+      assert_equal Developer.count.to_s, $2
+    end
+
+    test "cache_key with a relation having a group and having clause" do
+      developers = Developer.group(:salary).having("SUM(salary) > 200000")
+
+      assert_match(/\Adevelopers\/query-(\h+)-(\d+)-(\d+)\z/, developers.cache_key)
+
+      /\Adevelopers\/query-(\h+)-(\d+)-(\d+)\z/ =~ developers.cache_key
+
+      assert_equal ActiveSupport::Digest.hexdigest(developers.to_sql), $1
+      assert_equal Developer.count.to_s, $2
+    end
   end
 end
