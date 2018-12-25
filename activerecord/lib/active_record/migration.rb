@@ -4,6 +4,7 @@ require "benchmark"
 require "set"
 require "zlib"
 require "active_support/core_ext/module/attribute_accessors"
+require "active_support/actionable_error"
 
 module ActiveRecord
   class MigrationError < ActiveRecordError#:nodoc:
@@ -117,7 +118,7 @@ module ActiveRecord
     end
   end
 
-  class IllegalMigrationNameError < MigrationError#:nodoc:
+  class IllegalMigrationNameError < MigrationError #:nodoc:
     def initialize(name = nil)
       if name
         super("Illegal name for migration file: #{name}\n\t(only lower case letters, numbers, and '_' allowed).")
@@ -127,7 +128,7 @@ module ActiveRecord
     end
   end
 
-  class PendingMigrationError < MigrationError#:nodoc:
+  class PendingMigrationError < MigrationError #:nodoc:
     def initialize(message = nil)
       if !message && defined?(Rails.env)
         super("Migrations are pending. To resolve this issue, run:\n\n        rails db:migrate RAILS_ENV=#{::Rails.env}")

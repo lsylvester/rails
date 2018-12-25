@@ -1,3 +1,10 @@
+*   Introduce `ActionDispatch::ActionableExceptions`.
+
+    The `ActionDispatch::ActionableExceptions` middleware dispatches actions
+    from `ActiveSupport::ActionableError` descendants.
+
+    *Vipul A M*, *Yao Jie*, *Genadi Samokovarov*
+
 *   Introduce ActionDispatch::HostAuthorization
 
     This is a new middleware that guards against DNS rebinding attacks by
