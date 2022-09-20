@@ -36,6 +36,7 @@ QUnit.module('data-disable', {
 
 QUnit.test('form input field with "data-disable" attribute', function(assert) {
   const done = assert.async()
+
   var form = $('form[data-remote]'), input = form.find('input[type=text]')
 
   assert.enabledState(input, 'john')
@@ -54,6 +55,7 @@ QUnit.test('form input field with "data-disable" attribute', function(assert) {
 
 QUnit.test('form button with "data-disable" attribute', function(assert) {
   const done = assert.async()
+
   var form = $('form[data-remote]'), button = $('<button data-disable name="submit2">Submit</button>')
   form.append(button)
 
@@ -95,8 +97,9 @@ QUnit.test('form input[type=submit][data-disable] disables', function(assert) {
 })
 
 QUnit.test('form[data-remote] input[type=submit][data-disable] is replaced in ajax callback', function(assert) {
-  var form = $('#qunit-fixture form:not([data-remote])').attr('data-remote', 'true'), origFormContents = form.html()
   const done = assert.async()
+
+  var form = $('#qunit-fixture form:not([data-remote])').attr('data-remote', 'true'), origFormContents = form.html()
 
   form.bindNative('ajax:success', function() {
     form.html(origFormContents)
@@ -126,9 +129,10 @@ QUnit.test('form[data-remote] input[data-disable] is replaced with disabled fiel
 })
 
 QUnit.test('form[data-remote] textarea[data-disable] attribute', function(assert) {
+  const done = assert.async()
+
   var form = $('form[data-remote]'),
       textarea = $('<textarea data-disable name="user_bio">born, lived, died.</textarea>').appendTo(form)
-  const done = assert.async()
 
   form.bindNative('ajax:success', function(e, data) {
     setTimeout(function() {
@@ -152,8 +156,9 @@ QUnit.test('a[data-disable] disables', function(assert) {
 })
 
 QUnit.test('a[data-remote][data-disable] disables and re-enables', function(assert) {
-  var link = $('a[data-disable]').attr('data-remote', true)
   const done = assert.async()
+
+  var link = $('a[data-disable]').attr('data-remote', true)
 
   assert.enabledState(link, 'Click me')
 
@@ -171,8 +176,9 @@ QUnit.test('a[data-remote][data-disable] disables and re-enables', function(asse
 })
 
 QUnit.test('a[data-remote][data-disable] re-enables when `ajax:before` event is cancelled', function(assert) {
-  var link = $('a[data-disable]').attr('data-remote', true)
   const done = assert.async()
+
+  var link = $('a[data-disable]').attr('data-remote', true)
 
   assert.enabledState(link, 'Click me')
 
@@ -190,8 +196,9 @@ QUnit.test('a[data-remote][data-disable] re-enables when `ajax:before` event is 
 })
 
 QUnit.test('a[data-remote][data-disable] re-enables when `ajax:beforeSend` event is cancelled', function(assert) {
-  var link = $('a[data-disable]').attr('data-remote', true)
   const done = assert.async()
+
+  var link = $('a[data-disable]').attr('data-remote', true)
 
   assert.enabledState(link, 'Click me')
 
@@ -209,8 +216,9 @@ QUnit.test('a[data-remote][data-disable] re-enables when `ajax:beforeSend` event
 })
 
 QUnit.test('a[data-remote][data-disable] re-enables when `ajax:error` event is triggered', function(assert) {
-  var link = $('a[data-disable]').attr('data-remote', true).attr('href', '/error')
   const done = assert.async()
+
+  var link = $('a[data-disable]').attr('data-remote', true).attr('href', '/error')
 
   assert.enabledState(link, 'Click me')
 
@@ -277,8 +285,9 @@ QUnit.test('right/mouse-wheel-clicking on a link does not disable the link', fun
 })
 
 QUnit.test('button[data-remote][data-disable] disables and re-enables', function(assert) {
-  var button = $('button[data-remote][data-disable]')
   const done = assert.async()
+
+  var button = $('button[data-remote][data-disable]')
 
   assert.enabledState(button, 'Click me')
 
@@ -296,8 +305,9 @@ QUnit.test('button[data-remote][data-disable] disables and re-enables', function
 })
 
 QUnit.test('button[data-remote][data-disable] re-enables when `ajax:before` event is cancelled', function(assert) {
-  var button = $('button[data-remote][data-disable]')
   const done = assert.async()
+
+  var button = $('button[data-remote][data-disable]')
 
   assert.enabledState(button, 'Click me')
 
@@ -315,8 +325,9 @@ QUnit.test('button[data-remote][data-disable] re-enables when `ajax:before` even
 })
 
 QUnit.test('button[data-remote][data-disable] re-enables when `ajax:beforeSend` event is cancelled', function(assert) {
-  var button = $('button[data-remote][data-disable]')
   const done = assert.async()
+
+  var button = $('button[data-remote][data-disable]')
 
   assert.enabledState(button, 'Click me')
 
@@ -334,8 +345,9 @@ QUnit.test('button[data-remote][data-disable] re-enables when `ajax:beforeSend` 
 })
 
 QUnit.test('button[data-remote][data-disable] re-enables when `ajax:error` event is triggered', function(assert) {
-  var button = $('a[data-disable]').attr('data-remote', true).attr('href', '/error')
   const done = assert.async()
+
+  var button = $('a[data-disable]').attr('data-remote', true).attr('href', '/error')
 
   assert.enabledState(button, 'Click me')
 
@@ -352,8 +364,9 @@ QUnit.test('button[data-remote][data-disable] re-enables when `ajax:error` event
 })
 
 QUnit.test('do not enable elements for XHR redirects', function(assert) {
-  var link = $('a[data-disable]').attr('data-remote', true).attr('href', '/echo?with_xhr_redirect=true')
   const done = assert.async()
+
+  var link = $('a[data-disable]').attr('data-remote', true).attr('href', '/echo?with_xhr_redirect=true')
 
   assert.enabledState(link, 'Click me')
 

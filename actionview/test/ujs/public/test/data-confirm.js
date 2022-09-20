@@ -42,6 +42,7 @@ QUnit.module('data-confirm', {
 
 QUnit.test('clicking on a link with data-confirm attribute. Confirm yes.', function(assert) {
   const done = assert.async()
+
   var message
   // auto-confirm:
   window.confirm = function(msg) { message = msg; return true }
@@ -63,8 +64,9 @@ QUnit.test('clicking on a link with data-confirm attribute. Confirm yes.', funct
 })
 
 QUnit.test('clicking on a button with data-confirm attribute. Confirm yes.', function(assert) {
-  var message
   const done = assert.async()
+
+  var message
   // auto-confirm:
   window.confirm = function(msg) { message = msg; return true }
 
@@ -85,8 +87,9 @@ QUnit.test('clicking on a button with data-confirm attribute. Confirm yes.', fun
 })
 
 QUnit.test('clicking on a link with data-confirm attribute. Confirm No.', function(assert) {
-  var message
   const done = assert.async()
+
+  var message
   // auto-decline:
   window.confirm = function(msg) { message = msg; return false }
 
@@ -107,9 +110,9 @@ QUnit.test('clicking on a link with data-confirm attribute. Confirm No.', functi
 })
 
 QUnit.test('clicking on a button with data-confirm attribute. Confirm No.', function(assert) {
-  var message
   const done = assert.async()
 
+  var message
   // auto-decline:
   window.confirm = function(msg) { message = msg; return false }
 
@@ -130,8 +133,9 @@ QUnit.test('clicking on a button with data-confirm attribute. Confirm No.', func
 })
 
 QUnit.test('clicking on a button with data-confirm attribute. Confirm error.', function(assert) {
-  var message
   const done = assert.async()
+
+  var message
   // auto-decline:
   window.confirm = function(msg) { message = msg; throw 'some random error' }
 
@@ -152,8 +156,9 @@ QUnit.test('clicking on a button with data-confirm attribute. Confirm error.', f
 })
 
 QUnit.test('clicking on a submit button with form and data-confirm attributes. Confirm No.', function(assert) {
-  var message
   const done = assert.async()
+
+  var message
   // auto-decline:
   window.confirm = function(msg) { message = msg; return false }
 

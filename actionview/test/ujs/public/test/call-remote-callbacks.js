@@ -184,7 +184,6 @@ QUnit.test('"ajax:beforeSend" can be observed and stopped with event delegation'
   })
 
   setTimeout(function() { done() }, 13)
-
 })
 
 QUnit.test('"ajax:beforeSend", "ajax:send", "ajax:success" and "ajax:complete" are triggered', function(assert) {

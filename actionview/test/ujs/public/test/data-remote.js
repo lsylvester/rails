@@ -45,8 +45,9 @@ QUnit.module('data-remote', {
 })
 
 QUnit.test('ctrl-clicking on a link does not fire ajaxyness', function(assert) {
-  var link = $('a[data-remote]')
   const done = assert.async()
+  assert.expect(0)
+  var link = $('a[data-remote]')
   // Ideally, we'd set up an iframe to intercept normal link clicks
   // and add a test to make sure the iframe:loaded event is triggered.
   // However, jquery doesn't actually cause a native `click` event and
@@ -61,14 +62,15 @@ QUnit.test('ctrl-clicking on a link does not fire ajaxyness', function(assert) {
   link.triggerNative('click', { ctrlKey: true })
 
   setTimeout(function() {
-    assert.ok(true)
     done()
   }, 13)
 })
 
 QUnit.test('right/mouse-wheel-clicking on a link does not fire ajaxyness', function(assert) {
-  var link = $('a[data-remote]')
   const done = assert.async()
+  assert.expect(0)
+
+  var link = $('a[data-remote]')
 
   // Ideally, we'd set up an iframe to intercept normal link clicks
   // and add a test to make sure the iframe:loaded event is triggered.
@@ -84,13 +86,13 @@ QUnit.test('right/mouse-wheel-clicking on a link does not fire ajaxyness', funct
   link.triggerNative('click', { button: 2 })
 
   setTimeout(function() {
-    assert.ok(true)
     done()
   }, 13)
 })
 
 QUnit.test('clicking on a link via a non-mouse Event (such as from js) works', function(assert) {
   var link = $('a[data-remote]')
+
   const done = assert.async()
 
   link
@@ -106,6 +108,7 @@ QUnit.test('clicking on a link via a non-mouse Event (such as from js) works', f
 
 QUnit.test('ctrl-clicking on a link still fires ajax for non-GET links and for links with "data-params"', function(assert) {
   var link = $('a[data-remote]')
+
   const done = assert.async()
 
   link
@@ -172,6 +175,7 @@ QUnit.test('clicking on a link with both query string in href and data-params wi
 
 QUnit.test('clicking on a link with disabled attribute', function(assert) {
   const done = assert.async()
+  assert.expect(0)
 
   $('#qunit-fixture a[disabled]')
   .bindNative('ajax:before', function(e, data, status, xhr) {
@@ -180,7 +184,6 @@ QUnit.test('clicking on a link with disabled attribute', function(assert) {
   .triggerNative('click')
 
   setTimeout(function() {
-    assert.ok(true)
     done()
   }, 13)
 })
@@ -201,8 +204,10 @@ QUnit.test('clicking on a button with data-remote attribute', function(assert) {
 })
 
 QUnit.test('right/mouse-wheel-clicking on a button with data-remote attribute does not fire ajaxyness', function(assert) {
-  var button = $('button[data-remote]')
   const done = assert.async()
+  assert.expect(0)
+
+  var button = $('button[data-remote]')
 
   // Ideally, we'd set up an iframe to intercept normal link clicks
   // and add a test to make sure the iframe:loaded event is triggered.
@@ -218,7 +223,6 @@ QUnit.test('right/mouse-wheel-clicking on a button with data-remote attribute do
   button.triggerNative('click', { button: 2 })
 
   setTimeout(function() {
-    assert.ok(true)
     done()
   }, 13)
 })
@@ -382,6 +386,7 @@ QUnit.test('returning false in form\'s submit bindings in non-submit-bubbling br
 
 QUnit.test('clicking on a link with falsy "data-remote" attribute does not fire ajaxyness', function(assert) {
   const done = assert.async()
+
   assert.expect(0)
   $('a[data-remote]')
     .attr('data-remote', 'false')
@@ -397,8 +402,9 @@ QUnit.test('clicking on a link with falsy "data-remote" attribute does not fire 
 })
 
 QUnit.test('ctrl-clicking on a link with falsy "data-remote" attribute does not fire ajaxyness even if "data-params" present', function(assert) {
-  var link = $('a[data-remote]')
   const done = assert.async()
+
+  var link = $('a[data-remote]')
   assert.expect(0)
 
   link
@@ -423,6 +429,7 @@ QUnit.test('ctrl-clicking on a link with falsy "data-remote" attribute does not 
 
 QUnit.test('clicking on a button with falsy "data-remote" attribute', function(assert) {
   const done = assert.async()
+
   assert.expect(0)
 
   $('button[data-remote]:first')
@@ -440,6 +447,7 @@ QUnit.test('clicking on a button with falsy "data-remote" attribute', function(a
 
 QUnit.test('submitting a form with falsy "data-remote" attribute', function(assert) {
   const done = assert.async()
+
   assert.expect(0)
 
   $('form[data-remote]:first')
@@ -457,6 +465,7 @@ QUnit.test('submitting a form with falsy "data-remote" attribute', function(asse
 
 QUnit.test('changing a select option with falsy "data-remote" attribute', function(assert) {
   const done = assert.async()
+
   assert.expect(0)
 
   buildSelect({'data-remote': 'false'})
@@ -518,8 +527,9 @@ QUnit.test('form buttons should only be serialized when clicked', function(asser
 })
 
 QUnit.test('changing a select option without "data-url" attribute still fires ajax request to current location', function(assert) {
-  var currentLocation, ajaxLocation
   const done = assert.async()
+
+  var currentLocation, ajaxLocation
 
   buildSelect({'data-url': ''})
 

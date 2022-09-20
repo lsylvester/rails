@@ -36,11 +36,6 @@ QUnit.assert.enabledState = function(el, text) {
   this.equal(App.getVal(el), text, el.get(0).tagName + ' text should be original value')
 }
 
-App.checkEnabledState = function(assert, el, text) {
-  assert.ok(!App.disabled(el), el.get(0).tagName + ' should not be disabled')
-  assert.equal(App.getVal(el), text, el.get(0).tagName + ' text should be original value')
-}
-
 QUnit.assert.disabledState = function(el, text) {
   this.ok(App.disabled(el), el.get(0).tagName + ' should be disabled')
   this.equal(App.getVal(el), text, el.get(0).tagName + ' text should be disabled value')

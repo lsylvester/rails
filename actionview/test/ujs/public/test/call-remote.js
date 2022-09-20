@@ -17,6 +17,7 @@ function submit(fn) {
 
 QUnit.test('form method is read from "method" and not from "data-method"', function(assert) {
   const done = assert.async()
+
   buildForm({ method: 'post', 'data-method': 'get' })
 
   submit(function(e, data, status, xhr) {
