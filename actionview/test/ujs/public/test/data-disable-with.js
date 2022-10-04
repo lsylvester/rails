@@ -1,3 +1,5 @@
+import $ from 'jquery'
+
 QUnit.module('data-disable-with', {
   beforeEach: function() {
     $('#qunit-fixture').append($('<form />', {
