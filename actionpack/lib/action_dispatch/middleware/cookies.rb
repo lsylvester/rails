@@ -557,6 +557,7 @@ module ActionDispatch
     class JsonSerializer # :nodoc:
       def self.load(value)
         ActiveSupport::JSON.decode(value)
+      rescue ActiveSupport::JSON.parse_error
       end
 
       def self.dump(value)

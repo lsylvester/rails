@@ -696,6 +696,25 @@ class CookiesTest < ActionController::TestCase
     assert_nil @response.cookies["user_id"]
   end
 
+  def test_signed_cookie_using_json_serializer_does_not_error_on_marshal_value
+    @request.env["action_dispatch.cookies_serializer"] = :json
+
+    key_generator = @request.env["action_dispatch.key_generator"]
+    secret = key_generator.generate_key(@request.env["action_dispatch.signed_cookie_salt"])
+
+    marshal_value = ActiveSupport::MessageVerifier.new(secret, serializer: Marshal).generate(45)
+    @request.headers["Cookie"] = "user_id=#{marshal_value}"
+
+    get :get_signed_cookie
+
+    cookies = @controller.send :cookies
+
+    assert_not_equal 45, cookies[:user_id]
+    assert_nil cookies.signed[:user_id]
+
+    assert_nil @response.cookies["user_id"]
+  end
+
   def test_signed_cookie_using_hybrid_serializer_can_migrate_marshal_dumped_value_to_json
     @request.env["action_dispatch.cookies_serializer"] = :hybrid
 
